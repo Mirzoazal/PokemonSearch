@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mirzoazal Rajabov</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="icon" type="image/x-icon" href="pikachu logo.png">
+    
+    <!-- JavaScript function to create scrolling title -->
+    <script language = "javascript">
+      var msg = "Mirzoazal Rajabov ";
+      var pos = 0;			
+      function scrollTitle()
+      {
+        document.title = msg.substring(pos, msg.length) + msg.substring(0, pos++);
+        if (pos >  msg.length) pos = 0;
+        window.setTimeout("scrollTitle()", 200);
+      }
+      scrollTitle();
+    </script>
+  </head>
+  <body>
+    <header>
+      <!-- Pokemon logo image -->
+      <img src="https://1000logos.net/wp-content/uploads/2017/05/Pokemon-Logo.png" id="pokemon-logo">
+      
+      <!-- Heading -->
+      <h1>Pokemon Search</h1>
+    </header>
+
+    <section id="search">
+      <!-- Search form -->
+      <label for="searchbar" >Enter Pokemon ID:</label>
+      <input type="text" id="searchbar" value="1" placeholder="e.g. 1">
+      <button id="retrieve" class="buttons" onclick="searchPokemon()">Retrieve</button>
+      <button id="previous" class = "buttons" onclick="previousPokemon()">Previous</button>
+      <button id="next" class="buttons" onclick="nextPokemon()" autofocus>Next</button>
+    </section>
+
+    <!-- Output section -->
+    <section id="output"></section>
+
+   <script>
+     // Initialize variables
+     let pokemonList = [];
+     let currentPokemonIndex = -1;
+
+     // Function to search for a Pokemon
+     function searchPokemon() {
+       const searchTerm = searchbar.value.toLowerCase();
+       const url = "https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json";
+
+       // Fetch data from the API
+       fetch(url)
+         .then(response => response.json())
+         .then(data => {
+           pokemonList = data.pokemon;
+           const pokemon = pokemonList.find(pokemon => pokemon.id == searchTerm);
+           if (pokemon) {
+             // If Pokemon is found, display it
+             currentPokemonIndex = pokemonList.findIndex(p => p.id == pokemon.id);
+             displayPokemon(pokemon);
+           } else {
+             // If Pokemon is not found, display an error message
+             output.innerHTML = "<p>Pokemon not found.</p>";
+           }
+         })
+         .catch(error => {
+           // If there is an error fetching the data, display an error message
+           console.error(error);
+           output.innerHTML = "<p>Error fetching data. Please try again later.</p>";
+         });
+     }
+
+     // Function to display a Pokemon's details
+     function displayPokemon(pokemon) {
+       const outputContent = `
+         <div id="outputBox">
+           <p><strong>Pokemon ID:</strong> #${pokemon.id}</p>
+           <p><strong>Pokemon Number:</strong> #${pokemon.num}</p>
+           <p><strong>Name:</strong> ${pokemon.name}</p>
+           <p><strong>Height:</strong> ${pokemon.height}</p>
+           <p><strong>Weight:</strong> ${pokemon.weight}</p>
+           <img src="${pokemon.img}" alt="${pokemon.name} image">
+         </div>
+       `;
+       output.innerHTML = outputContent;
+     }
+
+     //display the previous pokemon
+function previousPokemon() {
+  currentPokemonIndex = (--currentPokemonIndex + (pokemonList.length))%(pokemonList.length);
+ displayPokemon(pokemonList[currentPokemonIndex]);
+}
+// display next pokemon
+function nextPokemon() {
+ currentPokemonIndex = ++currentPokemonIndex %(pokemonList.length);
+ displayPokemon(pokemonList[currentPokemonIndex]);
+ 
+}
+// pop outs first pokemon when page reloads
+searchPokemon();
+    </script>
+    
+    <footer>
+      &copy; 2023 Mirzoazal Rajabov Website. All rights reserved.
+    </footer>
+  </body>
+</html>
